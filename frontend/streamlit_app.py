@@ -1,4 +1,5 @@
 import streamlit as st
+from app.services.run_service import start_run
 
 st.title("InsightGraph AI")
 
@@ -12,4 +13,11 @@ if submitted:
         st.warning("Please enter a research goal!")
     else:
         with st.spinner("Please wait some moment..."):
-            st.success("this is the result.")
+            result = start_run(
+                project_id=project_name.strip() or "untitled-project",
+                research_goal=research_goal.strip()
+            )
+
+        st.success(result.get("status", "Done"))
+        st.subheader("Draft Report")
+        st.markdown(result.get("draft_report", "No report generated."))
