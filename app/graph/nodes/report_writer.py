@@ -10,8 +10,10 @@ concise research report drafts. Structure your output with these sections:
 ## Market Overview
 ## Key Considerations
 ## Next Steps
-Keep it under 300 words.
-"""
+
+Since no supporting research has been gathered yet in this draft, be explicit
+about what data would be needed to strengthen each section. Keep it under
+300 words."""
 
 def report_writer_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")
