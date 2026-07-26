@@ -6,3 +6,7 @@ class ResearchState(TypedDict, total=False):
     research_goal: str
     status: str
     draft_report: str
+
+    #s2
+    uploaded_files: List[str]
+    pdf_findings: str
