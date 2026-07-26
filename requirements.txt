@@ -1,5 +1,5 @@
 langgraph
-langchain
+langchain>=0.3.0
 langchain-openai
 streamlit
 python-dotenv
@@ -7,3 +7,4 @@ pydantic-settings
 langchain-chroma
 chromadb
 pypdf
+langchain-text-splitters
