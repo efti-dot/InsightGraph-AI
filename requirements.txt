@@ -4,3 +4,6 @@ langchain-openai
 streamlit
 python-dotenv
 pydantic-settings
+langchain-chroma
+chromadb
+pypdf
