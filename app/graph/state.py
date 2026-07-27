@@ -10,3 +10,6 @@ class ResearchState(TypedDict, total=False):
     #s2
     uploaded_files: List[str]
     pdf_findings: str
+
+    #s3
+    web_findings: str
