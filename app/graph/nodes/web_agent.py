@@ -17,15 +17,13 @@ def web_agent_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")
 
     if not settings.tavily_api_key:
-        state["web_findings"] = "Web search is not configured (no Tavily API key set)."
-        state["status"] = "Web agent: skipped (no API key)"
-        return state
+        print("[web_agent] skipped (no API key)")
+        return {"web_findings": "Web search is not configured (no Tavily API key set)."}
 
     results = search_web(query=goal, max_results=5)
     if not results:
-        state["web_findings"] = "Web search returned no relevant results for this goal."
-        state["status"] = "Web agent: no results"
-        return state
+        print("[web_agent] no results")
+        return {"web_findings": "Web search returned no relevant results for this goal."}
 
     formatted = "\n\n".join(
         f"Title: {r.get('title', 'Untitled')}\nURL: {r.get('url', '')}\nContent: {r.get('content', '')}"
@@ -33,13 +31,10 @@ def web_agent_node(state: ResearchState) -> ResearchState:
     )
 
     llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
-    response = llm.invoke(
-        [
-            SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=f"Research goal:\n{goal}\n\nSearch results:\n{formatted}"),
-        ]
-    )
+    response = llm.invoke([
+        SystemMessage(content=SYSTEM_PROMPT),
+        HumanMessage(content=f"Research goal:\n{goal}\n\nSearch results:\n{formatted}"),
+    ])
 
-    state["web_findings"] = response.content
-    state["status"] = "Web agent: findings extracted"
-    return state
+    print("[web_agent] findings extracted")
+    return {"web_findings": response.content}

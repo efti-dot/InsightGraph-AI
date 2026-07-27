@@ -18,26 +18,21 @@ def pdf_agent_node(state: ResearchState) -> ResearchState:
     uploaded_files = state.get("uploaded_files", [])
 
     if not uploaded_files:
-        state["pdf_findings"] = "No PDFs were uploaded for this project."
-        state["status"] = "PDF agent: skipped (no files)"
-        return state
+        print("[pdf_agent] skipped (no files)")
+        return {"pdf_findings": "No PDFs were uploaded for this project."}
 
     chunks = retrieve_pdf_chunks(project_id=project_id, query=goal, k=6)
 
     if not chunks:
-        state["pdf_findings"] = "PDFs were uploaded but no relevant content was retrieved for this goal."
-        state["status"] = "PDF agent: no matches"
-        return state
+        print("[pdf_agent] no matches")
+        return {"pdf_findings": "PDFs were uploaded but no relevant content was retrieved for this goal."}
 
     context = "\n\n---\n\n".join(chunks)
     llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
-    response = llm.invoke(
-        [
-            SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=f"Research goal:\n{goal}\n\nRetrieved excerpts:\n{context}"),
-        ]
-    )
+    response = llm.invoke([
+        SystemMessage(content=SYSTEM_PROMPT),
+        HumanMessage(content=f"Research goal:\n{goal}\n\nRetrieved excerpts:\n{context}"),
+    ])
 
-    state["pdf_findings"] = response.content
-    state["status"] = "PDF agent: findings extracted"
-    return state
+    print("[pdf_agent] findings extracted")
+    return {"pdf_findings": response.content}
