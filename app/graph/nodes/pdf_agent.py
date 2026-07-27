@@ -4,6 +4,14 @@ from app.graph.state import ResearchState
 from app.tools.pdf_retriever import retrieve_pdf_chunks
 from app.config import settings
 
+
+SYSTEM_PROMPT = """You are a research analyst summarizing findings extracted
+from uploaded PDF documents. Given retrieved excerpts and a research goal,
+write 3-6 concise bullet points of findings relevant to the goal. Only use
+what's in the excerpts — if they don't contain relevant information, say so
+plainly instead of making anything up."""
+
+
 def pdf_agent_node(state: ResearchState) -> ResearchState:
     project_id = state.get("project_id", "default")
     goal = state.get("research_goal", "")
@@ -25,7 +33,7 @@ def pdf_agent_node(state: ResearchState) -> ResearchState:
     llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
     response = llm.invoke(
         [
-            SystemMessage(content=""),
+            SystemMessage(content=SYSTEM_PROMPT),
             HumanMessage(content=f"Research goal:\n{goal}\n\nRetrieved excerpts:\n{context}"),
         ]
     )
