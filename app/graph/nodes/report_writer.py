@@ -17,6 +17,11 @@ about what data would be needed to strengthen each section. Keep it under
 
 def report_writer_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")
+    pdf_findings = state.get("pdf_findings", "")
+
+    user_content = f"Research goal:\n{goal}"
+    if pdf_findings:
+        user_content += f"\n\nFindings from internal documents (PDFs):\n{pdf_findings}"
 
     llm = ChatOpenAI(
         model=settings.model_name,
@@ -27,7 +32,7 @@ def report_writer_node(state: ResearchState) -> ResearchState:
     response = llm.invoke(
         [
             SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=f"Research goal:\n{goal}"),
+            HumanMessage(content=user_content),
         ]
     )
 
