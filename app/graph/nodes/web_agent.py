@@ -13,3 +13,24 @@ def web_agent_node(state: ResearchState) -> ResearchState:
         return state
 
     results = search_web(query=goal, max_results=5)
+    if not results:
+        state["web_findings"] = "Web search returned no relevant results for this goal."
+        state["status"] = "Web agent: no results"
+        return state
+
+    formatted = "\n\n".join(
+        f"Title: {r.get('title', 'Untitled')}\nURL: {r.get('url', '')}\nContent: {r.get('content', '')}"
+        for r in results
+    )
+
+    llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
+    response = llm.invoke(
+        [
+            SystemMessage(content=""),
+            HumanMessage(content=f"Research goal:\n{goal}\n\nSearch results:\n{formatted}"),
+        ]
+    )
+
+    state["web_findings"] = response.content
+    state["status"] = "Web agent: findings extracted"
+    return state
