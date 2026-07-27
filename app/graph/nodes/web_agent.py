@@ -4,6 +4,15 @@ from app.config import settings
 from app.graph.state import ResearchState
 from app.tools.tavily_search import search_web
 
+
+SYSTEM_PROMPT = """You are a research analyst summarizing recent web search
+results (news, policy, competitor activity) relevant to a research goal.
+Given a list of search results, write 3-6 concise bullet points of findings.
+Mention the source (by title or domain) for each point where useful. If the
+results don't contain relevant information, say so plainly instead of
+making anything up."""
+
+
 def web_agent_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")
 
@@ -26,7 +35,7 @@ def web_agent_node(state: ResearchState) -> ResearchState:
     llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
     response = llm.invoke(
         [
-            SystemMessage(content=""),
+            SystemMessage(content=SYSTEM_PROMPT),
             HumanMessage(content=f"Research goal:\n{goal}\n\nSearch results:\n{formatted}"),
         ]
     )
