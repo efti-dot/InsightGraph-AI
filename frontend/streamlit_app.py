@@ -41,5 +41,9 @@ if submitted:
             st.subheader("PDF Findings")
             st.markdown(result["pdf_findings"])
 
+        if result.get("web_findings"):
+            st.subheader("Web Research Findings")
+            st.markdown(result["web_findings"])
+
         st.subheader("Draft Report")
         st.markdown(result.get("draft_report", "No report generated."))
