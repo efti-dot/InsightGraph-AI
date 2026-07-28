@@ -24,3 +24,7 @@ class ResearchState(TypedDict, total=False):
 
     #s6
     charts: List[dict]
+
+    #s7
+    review_feedback: str
+    revision_count: int
