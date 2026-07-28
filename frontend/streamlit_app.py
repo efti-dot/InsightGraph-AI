@@ -3,6 +3,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import streamlit as st
 from app.services.run_service import start_run
+import plotly.io as pio
 
 st.title("InsightGraph AI")
 
@@ -53,17 +54,32 @@ if submitted:
 
         st.success(result.get("status", "Done"))
 
-        if result.get("pdf_findings"):
-            st.subheader("PDF Findings")
-            st.markdown(result["pdf_findings"])
+        with st.expander("Raw agent findings (before merging)"):
+            if result.get("pdf_findings"):
+                st.markdown("**PDF Findings**")
+                st.markdown(result["pdf_findings"])
+            if result.get("web_findings"):
+                st.markdown("**Web Research Findings**")
+                st.markdown(result["web_findings"])
+            if result.get("csv_analysis"):
+                st.markdown("**Data Analysis Findings**")
+                st.markdown(result["csv_analysis"])
 
-        if result.get("web_findings"):
-            st.subheader("Web Research Findings")
-            st.markdown(result["web_findings"])
+        if result.get("merged_knowledge"):
+            st.subheader("Merged Knowledge")
+            st.markdown(result["merged_knowledge"])
 
-        if result.get("csv_analysis"):
-            st.subheader("Data Analysis Findings")
-            st.markdown(result["csv_analysis"])
+        conflicts = result.get("conflicts", "")
+        if conflicts and "no conflicts" not in conflicts.lower():
+            st.subheader("Conflicts Flagged")
+            st.warning(conflicts)
+
+        charts = result.get("charts", [])
+        if charts:
+            st.subheader("Visualizations")
+            for chart in charts:
+                fig = pio.from_json(chart["figure_json"])
+                st.plotly_chart(fig, use_container_width=True)
 
         st.subheader("Draft Report")
         st.markdown(result.get("draft_report", "No report generated."))
