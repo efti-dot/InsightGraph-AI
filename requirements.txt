@@ -9,3 +9,4 @@ chromadb
 pypdf
 langchain-text-splitters
 langchain_tavily
+pandas
