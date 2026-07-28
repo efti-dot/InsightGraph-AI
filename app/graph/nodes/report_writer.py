@@ -9,13 +9,18 @@ concise research report drafts. Structure your output with these sections:
 ## Executive Summary
 ## Market Overview
 ## Data Analysis
+## Visualizations
 ## Key Considerations
 ## Next Steps
 
-Ground your writing in the findings you're given, and note when internal
-documents, web findings, and data analysis agree or disagree. Where a
-section has no supporting findings, say plainly what data would be needed
-instead of inventing facts. Keep it under 450 words."""
+Ground your writing in the merged findings you're given. If conflicting
+information between sources is noted, mention it explicitly (e.g. "sources
+differ on the exact growth rate") rather than presenting one figure as
+certain. In the Visualizations section, briefly describe what each named
+chart shows and why it's relevant — don't restate the raw numbers, those
+belong in Data Analysis. Where a section has no supporting findings, say
+plainly what data would be needed instead of inventing facts. Keep it
+under 500 words."""
 
 def report_writer_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")

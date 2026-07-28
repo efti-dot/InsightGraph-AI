@@ -7,6 +7,7 @@ from app.graph.nodes.web_agent import web_agent_node
 from app.graph.nodes.data_agent import data_agent_node
 from app.graph.nodes.knowledge_merger import knowledge_merger_node
 from app.graph.nodes.fact_checker import fact_checker_node
+from app.graph.nodes.visualization_agent import visualization_agent_node
 
 def build_graph():
     graph = StateGraph(ResearchState)
@@ -17,6 +18,7 @@ def build_graph():
     graph.add_node("data_agent", data_agent_node)
     graph.add_node("knowledge_merger", knowledge_merger_node)
     graph.add_node("fact_checker", fact_checker_node)
+    graph.add_node("visualization_agent", visualization_agent_node)
     graph.add_node("report_writer", report_writer_node)
 
     graph.set_entry_point("supervisor")
@@ -27,7 +29,8 @@ def build_graph():
     graph.add_edge("web_agent", "knowledge_merger")
     graph.add_edge("data_agent", "knowledge_merger")
     graph.add_edge("knowledge_merger", "fact_checker")
-    graph.add_edge("fact_checker", "report_writer")
+    graph.add_edge("fact_checker", "visualization_agent")
+    graph.add_edge("visualization_agent", "report_writer")
     graph.add_edge("report_writer", END)
 
     return graph.compile()
