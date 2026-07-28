@@ -21,3 +21,6 @@ class ResearchState(TypedDict, total=False):
     #s5
     merged_knowledge: str
     conflicts: str
+
+    #s6
+    charts: List[dict]
