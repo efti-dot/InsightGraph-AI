@@ -27,6 +27,7 @@ def report_writer_node(state: ResearchState) -> ResearchState:
     merged_knowledge = state.get("merged_knowledge", "")
     conflicts = state.get("conflicts", "")
     charts = state.get("charts", [])
+    review_feedback = state.get("review_feedback", "")
 
     user_content = f"Research goal:\n{goal}\n\nMerged findings:\n{merged_knowledge}"
 
@@ -38,6 +39,12 @@ def report_writer_node(state: ResearchState) -> ResearchState:
         user_content += f"\n\nCharts generated for this report (reference these by name in Visualizations, don't invent new data): {', '.join(chart_titles)}"
     else:
         user_content += "\n\nNo charts were generated (no CSV data was provided)."
+
+    if review_feedback:
+        user_content += (
+            f"\n\nA previous draft was reviewed and needs revision. "
+            f"Address this feedback directly:\n{review_feedback}"
+        )
 
     llm = ChatOpenAI(
         model=settings.model_name,
