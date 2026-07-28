@@ -83,3 +83,11 @@ if submitted:
 
         st.subheader("Draft Report")
         st.markdown(result.get("draft_report", "No report generated."))
+
+        review_decision = result.get("review_decision", "")
+        revision_count = result.get("revision_count", 0)
+        if review_decision:
+            label = "Approved by reviewer" if review_decision == "approve" else "Sent back for revision"
+            st.caption(f"{label} · {revision_count} revision round(s)")
+            with st.expander("Reviewer feedback"):
+                st.markdown(result.get("review_feedback", ""))
