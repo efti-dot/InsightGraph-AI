@@ -4,6 +4,14 @@ from app.config import settings
 from app.graph.state import ResearchState
 
 
+SYSTEM_PROMPT = """You merge findings from three research sources — internal
+documents, web search, and data analysis — into one structured summary
+organized by theme (e.g. market size, growth, competitors, risks). Label
+each point with its source in parentheses, e.g. "(PDF)", "(Web)", "(Data)".
+Keep every distinct finding; don't drop information, but avoid repeating
+the same point twice if two sources agree — merge those into one point
+with both sources tagged, e.g. "(PDF, Web)"."""
+
 def knowledge_merger_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")
     pdf_findings = state.get("pdf_findings", "") or "None"
@@ -25,7 +33,7 @@ Data analysis findings:
     llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
     response = llm.invoke(
         [
-            SystemMessage(content=""),
+            SystemMessage(content=SYSTEM_PROMPT),
             HumanMessage(content=user_content),
         ]
     )
