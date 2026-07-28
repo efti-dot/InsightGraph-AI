@@ -2,6 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from app.config import settings
 from app.graph.state import ResearchState
+from app.tools.csv_analyzer import analyze_csv
 
 def data_agent_node(state: ResearchState) -> ResearchState:
     csv_paths = state.get("csv_paths", [])
@@ -14,4 +15,19 @@ def data_agent_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")
 
     summaries = []
-    
+    for path in csv_paths:
+        try:
+            summaries.append(analyze_csv(path))
+        except Exception as exc:  # malformed CSV shouldn't crash the whole run
+            summaries.append({"file": path, "error": str(exc)})
+
+    llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
+    response = llm.invoke(
+        [
+            SystemMessage(content=""),
+            HumanMessage(content=f"Research goal:\n{goal}\n\nRaw statistics:\n{summaries}"),
+        ]
+    )
+
+    print("[data_agent] analysis complete")
+    return {"csv_analysis": response.content}
