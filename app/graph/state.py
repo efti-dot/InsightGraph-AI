@@ -27,4 +27,5 @@ class ResearchState(TypedDict, total=False):
 
     #s7
     review_feedback: str
+    review_decision: str
     revision_count: int
