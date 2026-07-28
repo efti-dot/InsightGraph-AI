@@ -4,6 +4,13 @@ from app.config import settings
 from app.graph.state import ResearchState
 from app.tools.csv_analyzer import analyze_csv
 
+
+SYSTEM_PROMPT = """You are a data analyst. Given raw pandas summary
+statistics for one or more CSV files, write 3-6 concise bullet points
+interpreting the numbers as they relate to the research goal — trends,
+growth, notable highs/lows, and any data quality issues like missing
+values. Only use the numbers given; do not invent figures."""
+
 def data_agent_node(state: ResearchState) -> ResearchState:
     csv_paths = state.get("csv_paths", [])
 
@@ -24,7 +31,7 @@ def data_agent_node(state: ResearchState) -> ResearchState:
     llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
     response = llm.invoke(
         [
-            SystemMessage(content=""),
+            SystemMessage(content=SYSTEM_PROMPT),
             HumanMessage(content=f"Research goal:\n{goal}\n\nRaw statistics:\n{summaries}"),
         ]
     )
