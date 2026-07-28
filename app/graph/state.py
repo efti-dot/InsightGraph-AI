@@ -13,3 +13,7 @@ class ResearchState(TypedDict, total=False):
 
     #s3
     web_findings: str
+
+    #s4
+    csv_paths: List[str]
+    csv_analysis: str
