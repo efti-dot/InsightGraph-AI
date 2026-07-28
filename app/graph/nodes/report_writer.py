@@ -19,17 +19,20 @@ instead of inventing facts. Keep it under 450 words."""
 
 def report_writer_node(state: ResearchState) -> ResearchState:
     goal = state.get("research_goal", "")
-    pdf_findings = state.get("pdf_findings", "")
-    web_findings = state.get("web_findings", "")
-    csv_analysis = state.get("csv_analysis", "")
+    merged_knowledge = state.get("merged_knowledge", "")
+    conflicts = state.get("conflicts", "")
+    charts = state.get("charts", [])
 
-    user_content = f"Research goal:\n{goal}"
-    if pdf_findings:
-        user_content += f"\n\nFindings from internal documents (PDFs):\n{pdf_findings}"
-    if web_findings:
-        user_content += f"\n\nFindings from web search:\n{web_findings}"
-    if csv_analysis:
-        user_content += f"\n\nFindings from data analysis (CSVs):\n{csv_analysis}"
+    user_content = f"Research goal:\n{goal}\n\nMerged findings:\n{merged_knowledge}"
+
+    if conflicts and "no conflicts" not in conflicts.lower():
+        user_content += f"\n\nConflicts flagged by fact checker:\n{conflicts}"
+
+    if charts:
+        chart_titles = [c.get("title", "Untitled chart") for c in charts]
+        user_content += f"\n\nCharts generated for this report (reference these by name in Visualizations, don't invent new data): {', '.join(chart_titles)}"
+    else:
+        user_content += "\n\nNo charts were generated (no CSV data was provided)."
 
     llm = ChatOpenAI(
         model=settings.model_name,
