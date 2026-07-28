@@ -17,3 +17,7 @@ class ResearchState(TypedDict, total=False):
     #s4
     csv_paths: List[str]
     csv_analysis: str
+
+    #s5
+    merged_knowledge: str
+    conflicts: str
