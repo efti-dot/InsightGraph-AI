@@ -12,6 +12,9 @@ with st.form("new_research"):
     uploaded_pdfs = st.file_uploader(
         "Upload PDFs (Optional)", type=["pdf"], accept_multiple_files=True
     )
+    uploaded_csvs = st.file_uploader(
+        "Upload CSVs (optional)", type=["csv"], accept_multiple_files=True
+    )
     submitted = st.form_submit_button("Analyze")
 
 if submitted:
@@ -20,19 +23,32 @@ if submitted:
     else:
         project_id=project_name.strip() or "untitled-project"
         pdf_paths: list[str] = []
-        if uploaded_pdfs:
-            upload_dir = os.path.join("storage", "uploads", project_id)
+        csv_paths: list[str] = []
+        upload_dir = os.path.join("storage", "uploads", project_id)
+
+        if uploaded_pdfs or uploaded_csvs:
             os.makedirs(upload_dir, exist_ok=True)
-            for f in uploaded_pdfs:
-                path = os.path.join(upload_dir, f.name)
-                with open(path, "wb") as out:
-                    out.write(f.getbuffer())
-                pdf_paths.append(path)
+
+        
+        for f in uploaded_pdfs:
+            path = os.path.join(upload_dir, f.name)
+            with open(path, "wb") as out:
+                out.write(f.getbuffer())
+            pdf_paths.append(path)
+
+        for f in uploaded_csvs or []:
+            path = os.path.join(upload_dir, f.name)
+            with open(path, "wb") as out:
+                out.write(f.getbuffer())
+            csv_paths.append(path)
+
+        
         with st.spinner("Please wait some moment..."):
             result = start_run(
                 project_id=project_id,
                 research_goal=research_goal.strip(),
                 pdf_paths=pdf_paths,
+                csv_paths=csv_paths,
             )
 
         st.success(result.get("status", "Done"))
@@ -44,6 +60,10 @@ if submitted:
         if result.get("web_findings"):
             st.subheader("Web Research Findings")
             st.markdown(result["web_findings"])
+
+        if result.get("csv_analysis"):
+            st.subheader("Data Analysis Findings")
+            st.markdown(result["csv_analysis"])
 
         st.subheader("Draft Report")
         st.markdown(result.get("draft_report", "No report generated."))
