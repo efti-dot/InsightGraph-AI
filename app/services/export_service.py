@@ -41,6 +41,12 @@ def _render_chart_images(charts: list[dict], out_dir: str) -> list[str]:
             print(f"[export_service] failed to render chart {i}: {exc}")
     return image_paths
 
+def export_markdown(project_id: str, draft_report: str) -> str:
+    path = os.path.join(_report_dir(project_id), "report.md")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(draft_report)
+    return path
+
 
 def export_docx(project_id: str, draft_report: str, charts: list[dict]) -> str:
     out_dir = _report_dir(project_id)
@@ -106,3 +112,12 @@ def export_pdf(project_id: str, draft_report: str, charts: list[dict]) -> str:
     path = os.path.join(out_dir, "report.pdf")
     pdf.output(path)
     return path
+
+
+def export_all(project_id: str, draft_report: str, charts: list[dict] | None = None) -> dict:
+    charts = charts or []
+    return {
+        "markdown": export_markdown(project_id, draft_report),
+        "docx": export_docx(project_id, draft_report, charts),
+        "pdf": export_pdf(project_id, draft_report, charts),
+    }
