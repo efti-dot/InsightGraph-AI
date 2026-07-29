@@ -63,9 +63,9 @@ if submitted:
         st.session_state.project_id = project_id
         st.session_state.exported = exported
 
-if st.session_state.result:
-    result = st.session_state.result
-    exported = st.session_state.exported
+if st.session_state.get("result"):
+    result = st.session_state.get("result")
+    exported = st.session_state.get("exported")
 
     st.success(result.get("status", "Done"))
 
