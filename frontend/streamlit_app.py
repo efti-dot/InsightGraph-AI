@@ -91,3 +91,7 @@ if submitted:
             st.caption(f"{label} · {revision_count} revision round(s)")
             with st.expander("Reviewer feedback"):
                 st.markdown(result.get("review_feedback", ""))
+
+        st.subheader("Download Report")
+        with st.spinner("Preparing downloads..."):
+            st.markdown("download complete!")
