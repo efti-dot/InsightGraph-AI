@@ -17,5 +17,11 @@ def start_run(project_id: str, research_goal: str, pdf_paths: list[str] | None =
         "status": "starting",
     }
 
-    final_state = research_graph.invoke(initial_state)
+    final_state = research_graph.invoke(
+        initial_state,
+        config={
+            "tags": [project_id],
+            "metadata": {"project_id": project_id, "research_goal": research_goal},
+        },
+    )
     return final_state
