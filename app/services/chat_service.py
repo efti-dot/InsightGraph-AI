@@ -11,6 +11,9 @@ MAX_TOOL_ROUNDS = 4
 def build_tools(project_id: str):
     @tool
     def search_documents(query: str) -> str:
+        """Search the project's uploaded PDF documents for content
+        relevant to a query. Use this for questions about internal
+        documents rather than the merged summary."""
         chunks = retrieve_pdf_chunks(project_id=project_id, query=query, k=6)
         if not chunks:
             return "No relevant content found in the uploaded PDFs."

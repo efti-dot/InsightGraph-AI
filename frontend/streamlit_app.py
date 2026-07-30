@@ -5,6 +5,7 @@ import streamlit as st
 from app.services.run_service import start_run
 import plotly.io as pio
 from app.services.export_service import export_all
+from app.services.chat_service import ask_followup
 
 st.title("InsightGraph AI")
 
@@ -131,4 +132,27 @@ if st.session_state.get("result"):
                 "PDF (.pdf)", f, file_name="report.pdf", mime="application/pdf", use_container_width=True
             )
 
-    
+    st.subheader("Ask follow-up questions")
+    st.caption("Answers use this project's findings, data, and documents — not general knowledge.")
+
+    for turn in st.session_state.get("chat_history", []):
+        with st.chat_message(turn["role"]):
+            st.markdown(turn["content"])
+
+    question = st.chat_input()
+    if question:
+        with st.chat_message("user"):
+            st.markdown(question)
+
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                answer = ask_followup(
+                    state=result,
+                    chat_history=st.session_state.get("chat_history", []),
+                    question=question,
+                )
+            st.markdown(answer)
+
+        st.session_state.setdefault("chat_history", []).append({"role": "user", "content": question})
+        st.session_state.setdefault("chat_history", []).append({"role": "assistant", "content": answer})
+
