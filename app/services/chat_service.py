@@ -3,6 +3,9 @@ from app.tools.pdf_retriever import retrieve_pdf_chunks
 from app.tools.csv_query import CSV_TOOLS
 from langchain_openai import ChatOpenAI
 from app.config import settings
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
+
+MAX_TOOL_ROUNDS = 4
 
 
 def build_tools(project_id: str):
@@ -46,11 +49,42 @@ summary above (call list_columns first if you're unsure of column
 names). Keep answers concise and conversational, like a colleague
 answering a quick question, not another full report."""
 
-def ask_followup(state: dict) -> str:
+def ask_followup(state: dict, chat_history: list[dict], question: str) -> str:
     project_id = state.get("project_id", "default")
     tools = build_tools(project_id)
     tools_by_name = {t.name: t for t in tools}
 
     llm = ChatOpenAI(model=settings.model_name, api_key=settings.openai_api_key, temperature=0.2)
     llm_with_tools = llm.bind_tools(tools)
+
+    messages = [SystemMessage(content=build_system_prompt(state))]
+    for turn in chat_history:
+        if turn["role"] == "user":
+            messages.append(HumanMessage(content=turn["content"]))
+        else:
+            messages.append(AIMessage(content=turn["content"]))
+    messages.append(HumanMessage(content=question))
+
+    for _ in range(MAX_TOOL_ROUNDS):
+        response = llm_with_tools.invoke(messages)
+        messages.append(response)
+
+        if not response.tool_calls:
+            return response.content
+
+        for call in response.tool_calls:
+            tool_fn = tools_by_name.get(call["name"])
+            if tool_fn is None:
+                result = f"Unknown tool: {call['name']}"
+            else:
+                try:
+                    result = tool_fn.invoke(call["args"])
+                except Exception as exc:
+                    result = f"Tool error: {exc}"
+            messages.append(ToolMessage(content=str(result), tool_call_id=call["id"]))
+
+    return (
+        "I wasn't able to fully answer that after a few tool calls — "
+        "try rephrasing, or ask something more specific."
+    )
 
