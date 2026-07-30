@@ -130,3 +130,5 @@ if st.session_state.get("result"):
             st.download_button(
                 "PDF (.pdf)", f, file_name="report.pdf", mime="application/pdf", use_container_width=True
             )
+
+    
