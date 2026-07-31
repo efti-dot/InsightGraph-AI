@@ -133,7 +133,7 @@ if st.session_state.get("result"):
             )
 
     st.subheader("Ask follow-up questions")
-    st.caption("Answers use this project's findings, data, and documents — not general knowledge.")
+    st.caption("Answers use this project's findings, data,, and documents — not general knowledge.")
 
     for turn in st.session_state.get("chat_history", []):
         with st.chat_message(turn["role"]):
