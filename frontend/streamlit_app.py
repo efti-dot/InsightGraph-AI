@@ -133,25 +133,28 @@ if st.session_state.get("result"):
             )
 
     st.subheader("Ask follow-up questions")
-    st.caption("Answers use this project's findings, data,, and documents — not general knowledge.")
+    st.caption("Answers use this project's findings, data, and documents — not general knowledge.")
 
+    chat_box = st.container(height=350)
     for turn in st.session_state.get("chat_history", []):
-        with st.chat_message(turn["role"]):
-            st.markdown(turn["content"])
+        with chat_box:
+            with st.chat_message(turn["role"]):
+                st.markdown(turn["content"])
 
-    question = st.chat_input()
+    question = st.chat_input("Ask anything about your project...")
     if question:
-        with st.chat_message("user"):
-            st.markdown(question)
+        with chat_box:
+            with st.chat_message("user"):
+                st.markdown(question)
 
-        with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
-                answer = ask_followup(
-                    state=result,
-                    chat_history=st.session_state.get("chat_history", []),
-                    question=question,
-                )
-            st.markdown(answer)
+            with st.chat_message("assistant"):
+                with st.spinner("Thinking..."):
+                    answer = ask_followup(
+                        state=result,
+                        chat_history=st.session_state.get("chat_history", []),
+                        question=question,
+                    )
+                st.markdown(answer)
 
         st.session_state.setdefault("chat_history", []).append({"role": "user", "content": question})
         st.session_state.setdefault("chat_history", []).append({"role": "assistant", "content": answer})
