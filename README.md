@@ -80,6 +80,8 @@ Reviews and improves the generated content before report creation.
 ### Report Writer
 Produces a structured, comprehensive final report.
 
+Then you can ask follow-up questions about the full project you have built.
+
 ---
 
 ## Technology Stack
