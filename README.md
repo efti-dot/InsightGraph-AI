@@ -18,7 +18,7 @@ Live Application: https://insightgraph-ai.streamlit.app/
 -  Knowledge merging from multiple sources
 -  Automated report generation
 -  Export reports for sharing
--  Interactive Streamlit interface
+-  Interactive Streamlit interface..
 
 ---
 
